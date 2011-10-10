@@ -1,0 +1,7 @@
+#!/bin/bash
+
+EMAIL="rahul@shell.gluster.com:/home/rahul/perf_logs"
+
+./calc_avg "$@" > /tmp/run_all
+
+scp /tmp/run_all $EMAIL/run_all;
