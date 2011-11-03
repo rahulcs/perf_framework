@@ -71,7 +71,12 @@ then
 	gdb -q --command=commands.$$ -p `pidof glusterfs` | grep gf_mem_acct_enable | awk '{print $(NF-1) $NF}'
 	rm commands.$$ > /dev/null 2>&1
 else
-	mount -t $MOUNT_TYPE $acl_opts $MGMT_NODE:$VOLNAME $MOUNT_POINT
+        if [ $MOUNT_TYPE == "nfs" ]
+        then
+            mount -o soft,intr,vers=3 $acl_opts $MGMT_NODE:$VOLNAME $MOUNT_POINT
+        else
+            mount -t $MOUNT_TYPE $acl_opts $MGMT_NODE:$VOLNAME $MOUNT_POINT
+        fi
 	mount_status=$?
 fi
 
