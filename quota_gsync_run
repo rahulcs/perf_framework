@@ -14,7 +14,7 @@ echo "run$a - Quota off; gsync on..."
 ./run "sed -i 's/option quota on/option quota off/' /etc/glusterd/vols/testvol/*datastore*"
 ./run /usr/local/sbin/glusterd
 sleep 5
-echo "run`cat .runfile` - $MOUNT_TYPE - $runlabel - distributed replicate - (quota off, gsync on)" >> $RUNLOG
+echo "run`cat .runfile` - $MOUNT_TYPE - $runlabel - $GF_CONFIG - (quota off, gsync on)" >> $RUNLOG
 ./start_perf_measure
 sleep 10
 
@@ -24,7 +24,7 @@ echo "run$((a+1)) - Quota on; gsync on..."
 ./run "sed -i 's/option xtime off/option xtime on/' /etc/glusterd/vols/testvol/*datastore*"
 ./run /usr/local/sbin/glusterd
 sleep 5
-echo "run`cat .runfile` - $MOUNT_TYPE - $runlabel - distributed replicate - (quota on, gsync on)" >> $RUNLOG
+echo "run`cat .runfile` - $MOUNT_TYPE - $runlabel - $GF_CONFIG - (quota on, gsync on)" >> $RUNLOG
 ./start_perf_measure
 sleep 10
 
@@ -34,7 +34,7 @@ echo "run$((a+2)) - Quota on; gsync off..."
 ./run "sed -i 's/option quota off/option quota on/' /etc/glusterd/vols/testvol/*datastore*"
 ./run /usr/local/sbin/glusterd
 sleep 5
-echo "run`cat .runfile` - $MOUNT_TYPE - $runlabel - distributed replicate - (quota on, gsync off)" >> $RUNLOG
+echo "run`cat .runfile` - $MOUNT_TYPE - $runlabel - $GF_CONFIG - (quota on, gsync off)" >> $RUNLOG
 ./start_perf_measure
 sleep 10
 
