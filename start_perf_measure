@@ -60,29 +60,31 @@ else
         acl_opts=""
 fi
 
+if [ $MOUNT_TYPE == "nfs" ]
+then
+        nfs_opts="-o vers=3"
+else
+        nfs_opts=""
+fi
+
 echo "Mounting volume..."
 if [ $ENABLE_MEM_ACCT == "yes" ]
 then
 	echo "Memory accounting status on client -"
 	echo "x/x &gf_mem_acct_enable" > commands.$$
 	echo "quit" >> commands.$$
-	GLUSTERFS_DISABLE_MEM_ACCT=0 mount -t $MOUNT_TYPE $acl_opts $MGMT_NODE:$VOLNAME $MOUNT_POINT
+	GLUSTERFS_DISABLE_MEM_ACCT=0 mount -t $MOUNT_TYPE $acl_opts $nfs_opts $MGMT_NODE:$VOLNAME $MOUNT_POINT
 	mount_status=$?
 	gdb -q --command=commands.$$ -p `pidof glusterfs` | grep gf_mem_acct_enable | awk '{print $(NF-1) $NF}'
 	rm commands.$$ > /dev/null 2>&1
 else
-        if [ $MOUNT_TYPE == "nfs" ]
-        then
-            mount -o soft,intr,vers=3 $acl_opts $MGMT_NODE:$VOLNAME $MOUNT_POINT
-        else
-            mount -t $MOUNT_TYPE $acl_opts $MGMT_NODE:$VOLNAME $MOUNT_POINT
-        fi
-	mount_status=$?
+        mount -t $MOUNT_TYPE $acl_opts $nfs_opts $MGMT_NODE:$VOLNAME $MOUNT_POINT
+        mount_status=$?
 fi
 
 if [ $mount_status -ne 0 ]
 then
-        echo "mount -t $MOUNT_TYPE $acl_opts $MGMT_NODE:$VOLNAME $MOUNT_POINT failed..."
+        echo "mount -t $MOUNT_TYPE $acl_opts $nfs_opts $MGMT_NODE:$VOLNAME $MOUNT_POINT failed..."
         echo "Exiting..."
         exit 1
 fi
