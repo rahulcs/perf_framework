@@ -1,7 +1,7 @@
 #!/bin/bash -ue
 
 egrep_patt=""
-
+num=""
 for run in "$@"
 do
 	egrep_patt+="^`echo run$run\|`"
@@ -27,12 +27,23 @@ echo "Operations               " > /tmp/tmp_ops.$$
 echo "-------------------------" >> /tmp/tmp_ops.$$
 awk '{ printf("%-25s\n", $0) }' ops >> /tmp/tmp_ops.$$
 
-num="{$1";
-shift;
-for list in "$@"; do
-    num="$num,$list"
-done
-num="$num}"
+if [ $# -lt 2 ]; then
+    paste /tmp/tmp_ops.$$ /tmp/run*.$$;
+else
+    for list in "$@"; do
+        if [ $list -lt 9 ]; then
+                list="0$list"
+        fi
+        if [ "$1" -eq $list ]; then
+            num="{$list"
+        else
+            num="$num,$list";
+        fi
 
-eval "paste /tmp/tmp_ops.$$ /tmp/run$num.$$"
+        if [ "${@: -1}" -eq $list ]; then
+            num="$num}"
+        fi
+    done
+    eval "paste /tmp/tmp_ops.$$ /tmp/run$num.$$";
+fi
 rm /tmp/run*.$$ /tmp/tmp_ops.$$
