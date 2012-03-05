@@ -5,7 +5,7 @@ function prepare_server()
 	ip_addr=$1
 	ssh -l root $ip_addr mkdir -p $SERVER_BUILD_DIR
 	scp -p $RELEASE_TARBALL $BUILD_SCRIPT root@$ip_addr:$SERVER_BUILD_DIR
-	ssh -l root $ip_addr "cd $SERVER_BUILD_DIR && tar xf $RELEASE_TARBALL"
+	ssh -l root $ip_addr "cd $SERVER_BUILD_DIR && tar -xf $RELEASE_TARBALL"
 	ssh -l root $ip_addr "cd $SERVER_BUILD_DIR/$release_dir && ../$BUILD_SCRIPT"
 }
 
@@ -13,7 +13,7 @@ function prepare_client()
 {
 	mkdir -p $CLIENT_BUILD_DIR
 	cp $RELEASE_TARBALL $BUILD_SCRIPT $CLIENT_BUILD_DIR
-	cd $CLIENT_BUILD_DIR && tar xf $RELEASE_TARBALL
+	cd $CLIENT_BUILD_DIR && tar -xf $RELEASE_TARBALL
 	cd $CLIENT_BUILD_DIR/$release_dir && ../$BUILD_SCRIPT
 }
 

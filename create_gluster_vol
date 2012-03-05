@@ -15,6 +15,10 @@ function mgmt_vol_create()
 	for brick in $BRICK_IP_ADDRS
 	do
 		ssh  -l root $MGMT_NODE "$GF_BIN/gluster peer probe $brick"
+                if [ $? -ne 0 ]; then
+                    echo "cluster not set up properly. Please check & restart."
+                    exit 255;
+                fi
 	done
         ssh -l root $MGMT_NODE "$@"
 	ssh -l root $MGMT_NODE "$GF_BIN/gluster volume start $VOLNAME"
@@ -45,22 +49,23 @@ function cleanup_brick()
 
 echo "Cleaning bricks..."
 for brick in $BRICK_IP_ADDRS
-do 
+do
         cleanup_brick $brick &
 done
 
 wait
 
-echo "Creating export directory..."
+echo "Creating export directory & flushing firewall rules."
 for brick in $BRICK_IP_ADDRS
-do 
+do
         ssh -l root $brick "mkdir -p $SERVER_EXPORT_DIR"
+        ssh -l root $brick "iptables -F"
 done
 
 # Start glusterd on all the bricks
 echo "Starting glusterd..."
 for brick in $BRICK_IP_ADDRS
-do 
+do
 	if [ $ENABLE_MEM_ACCT == "yes" ]
 	then
         	ssh -l root $brick "GLUSTERFS_DISABLE_MEM_ACCT=0 $GF_BIN/glusterd"
@@ -74,7 +79,7 @@ done
 bricklist=""
 count=0
 for brick in $BRICK_IP_ADDRS
-do 
+do
         bricklist+="$brick:$SERVER_EXPORT_DIR "
         count=$((count+1))
 done
@@ -109,7 +114,7 @@ sleep 5
 if [ $ENABLE_MEM_ACCT == "yes" ]
 then
 	for brick in $BRICK_IP_ADDRS
-	do 
+	do
 		echo "Memory accounting status on : $brick -"
         	ssh -l root $brick "\
                 	echo \"x/x &gf_mem_acct_enable\" > gf_gdb_commands;\
