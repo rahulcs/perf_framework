@@ -1,5 +1,10 @@
-date +%s
-ssh -l root 10.1.10.30 "date +%s"
-ssh -l root 10.1.10.31 "date +%s"
-ssh -l root 10.1.10.35 "date +%s"
-ssh -l root 10.1.10.36 "date +%s"
+#!/bin/bash
+
+CONFIG_FILE=gf_perf_config
+source $CONFIG_FILE
+
+date +%s;
+for brick in $BRICK_IP_ADDRS
+do
+    ssh -l root $brick "date +%s"
+done
